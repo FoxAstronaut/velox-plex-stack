@@ -119,6 +119,7 @@ services:
       # - ${MOVIES_4K_FOLDER}:/media/Movies_4K
       - ${TV_FOLDER}:/media/TV
       # - ${TV_4K_FOLDER}:/media/TV_4K
+      - /tmp/plex:/transcode
     ports:
       - ${PLEX_PORT}:32400
 
