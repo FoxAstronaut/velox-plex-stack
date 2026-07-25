@@ -41,6 +41,8 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
+      - VIRTUAL_HOST=tv.$domain
+      - VIRTUAL_PORT=8989
     volumes:
       - ${DATADIR}/sonarr/config:/config
       - ${TV_FOLDER}:/media/TV
@@ -75,6 +77,8 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
+      - VIRTUAL_HOST=movies.$domain
+      - VIRTUAL_PORT=7878
     volumes:
       - ${DATADIR}/radarr/config:/config
       - ${MOVIES_FOLDER}:/media/Movies
@@ -113,6 +117,8 @@ services:
       - PGID=$PGID
       - VERSION=docker
       - PLEX_CLAIM=${PLEX_CLAIMTOKEN}
+      - VIRTUAL_HOST=stream.$domain
+      - VIRTUAL_PORT=32400
     volumes:
       - ${DATADIR}/plex/config:/config
       - ${MOVIES_FOLDER}:/media/Movies
@@ -134,6 +140,8 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
+      - VIRTUAL_HOST=download.$domain
+      - VIRTUAL_PORT=8080
     volumes:
       - ${DATADIR}/qbittorrent/config:/config
       - ${DOWNLOADS_FOLDER}:/downloads
@@ -151,6 +159,8 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
+      - VIRTUAL_HOST=request.$domain
+      - VIRTUAL_PORT=5055
     ports:
       - ${OVERSEERR_PORT}:5055
     volumes:
@@ -166,6 +176,8 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
+      - VIRTUAL_HOST=views.$domain
+      - VIRTUAL_PORT=8181
     volumes:
       - ${DATADIR}/tautulli/config:/config
     ports:
@@ -179,6 +191,8 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
+      - VIRTUAL_HOST=subtitles.$domain
+      - VIRTUAL_PORT=6767
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
     volumes:
@@ -197,6 +211,8 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
+      - VIRTUAL_HOST=indexer.$domain
+      - VIRTUAL_PORT=9696
     volumes:
       - ${DATADIR}/prowlarr/config:/config
     ports:
@@ -224,20 +240,20 @@ services:
 
 #-------------- Organizr ----------------#
 
-  organizr:
-    <<: *common-keys-core # See EXTENSION FIELDS at the top
-    container_name: organizr
-    volumes:
-      - ${DATADIR}/organizr/config:/config
-    environment:
-      - TZ=$TZ
-      - PUID=$PUID
-      - PGID=$PGID
-      - fpm=true
-      - branch=v2-master
-    ports:
-      - '${ORGANIZR_PORT}:80'
-    image: organizr/organizr:latest
+  # organizr:
+  #   <<: *common-keys-core # See EXTENSION FIELDS at the top
+  #   container_name: organizr
+  #   volumes:
+  #     - ${DATADIR}/organizr/config:/config
+  #   environment:
+  #     - TZ=$TZ
+  #     - PUID=$PUID
+  #     - PGID=$PGID
+  #     - fpm=true
+  #     - branch=v2-master
+  #   ports:
+  #     - '${ORGANIZR_PORT}:80'
+  #   image: organizr/organizr:latest
 
 #------------- Portainer ----------------#
 
@@ -247,6 +263,8 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
+      - VIRTUAL_HOST=health.$domain
+      - VIRTUAL_PORT=9000
     image: portainer/portainer-ce:latest
     container_name: portainer
     security_opt:
@@ -257,3 +275,19 @@ services:
       - ${DATADIR}/portainer/config:/data
     ports:
       - ${PORTAINER_PORT}:9000
+
+#------------- Nginx Proxy ----------------#
+
+  nginx-proxy:
+    <<: *common-keys-core # See EXTENSION FIELDS at the top
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+    image: jwilder/nginx-proxy
+    ports:
+      - ${NGINX_PORT}:80
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    environment:
+      HTTPS_METHOD: nohttps
