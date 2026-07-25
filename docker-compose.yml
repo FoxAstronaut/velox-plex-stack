@@ -41,7 +41,7 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
-      - VIRTUAL_HOST=tv.$domain
+      - VIRTUAL_HOST=tv.$DOMAIN_URL
       - VIRTUAL_PORT=8989
     volumes:
       - ${DATADIR}/sonarr/config:/config
@@ -77,7 +77,7 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
-      - VIRTUAL_HOST=movies.$domain
+      - VIRTUAL_HOST=movies.$DOMAIN_URL
       - VIRTUAL_PORT=7878
     volumes:
       - ${DATADIR}/radarr/config:/config
@@ -117,7 +117,7 @@ services:
       - PGID=$PGID
       - VERSION=docker
       - PLEX_CLAIM=${PLEX_CLAIMTOKEN}
-      - VIRTUAL_HOST=stream.$domain
+      - VIRTUAL_HOST=stream.$DOMAIN_URL
       - VIRTUAL_PORT=32400
     volumes:
       - ${DATADIR}/plex/config:/config
@@ -140,7 +140,7 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
-      - VIRTUAL_HOST=download.$domain
+      - VIRTUAL_HOST=download.$DOMAIN_URL
       - VIRTUAL_PORT=8080
     volumes:
       - ${DATADIR}/qbittorrent/config:/config
@@ -159,7 +159,7 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
-      - VIRTUAL_HOST=request.$domain
+      - VIRTUAL_HOST=request.$DOMAIN_URL
       - VIRTUAL_PORT=5055
     ports:
       - ${OVERSEERR_PORT}:5055
@@ -176,7 +176,7 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
-      - VIRTUAL_HOST=views.$domain
+      - VIRTUAL_HOST=views.$DOMAIN_URL
       - VIRTUAL_PORT=8181
     volumes:
       - ${DATADIR}/tautulli/config:/config
@@ -191,7 +191,7 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
-      - VIRTUAL_HOST=subtitles.$domain
+      - VIRTUAL_HOST=subtitles.$DOMAIN_URL
       - VIRTUAL_PORT=6767
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
@@ -211,7 +211,7 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
-      - VIRTUAL_HOST=indexer.$domain
+      - VIRTUAL_HOST=indexer.$DOMAIN_URL
       - VIRTUAL_PORT=9696
     volumes:
       - ${DATADIR}/prowlarr/config:/config
@@ -263,7 +263,7 @@ services:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
-      - VIRTUAL_HOST=health.$domain
+      - VIRTUAL_HOST=health.$DOMAIN_URL
       - VIRTUAL_PORT=9000
     image: portainer/portainer-ce:latest
     container_name: portainer
