@@ -33,6 +33,7 @@ volumes:
   certs:
   html:
   acme:
+  vhost:
 
 #################################### SERVICES  ###################################
 
@@ -50,6 +51,7 @@ services:
       - PGID=$PGID
       - VIRTUAL_HOST=tv.$DOMAIN_URL
       - NETWORK_ACCESS=internal
+      - LETSENCRYPT_HOST=tv.$DOMAIN_URL
     volumes:
       - ${DATADIR}/sonarr/config:/config
       - ${TV_FOLDER}:/media/TV
@@ -86,6 +88,7 @@ services:
       - PGID=$PGID
       - VIRTUAL_HOST=movies.$DOMAIN_URL
       - NETWORK_ACCESS=internal
+      - LETSENCRYPT_HOST=movies.$DOMAIN_URL
     volumes:
       - ${DATADIR}/radarr/config:/config
       - ${MOVIES_FOLDER}:/media/Movies
@@ -125,7 +128,7 @@ services:
       - VERSION=docker
       - PLEX_CLAIM=${PLEX_CLAIMTOKEN}
       - VIRTUAL_HOST=stream.$DOMAIN_URL
-      - VIRTUAL_PROTO=https
+      - LETSENCRYPT_HOST=stream.$DOMAIN_URL
     volumes:
       - ${DATADIR}/plex/config:/config
       - ${MOVIES_FOLDER}:/media/Movies
@@ -149,6 +152,7 @@ services:
       - PGID=$PGID
       - VIRTUAL_HOST=download.$DOMAIN_URL
       - NETWORK_ACCESS=internal
+      - LETSENCRYPT_HOST=download.$DOMAIN_URL
     volumes:
       - ${DATADIR}/qbittorrent/config:/config
       - ${DOWNLOADS_FOLDER}:/downloads
@@ -167,7 +171,7 @@ services:
       - PUID=$PUID
       - PGID=$PGID
       - VIRTUAL_HOST=request.$DOMAIN_URL
-      - VIRTUAL_PROTO=https
+      - LETSENCRYPT_HOST=request.$DOMAIN_URL
     ports:
       - ${OVERSEERR_PORT}:5055
     volumes:
@@ -184,6 +188,7 @@ services:
       - PUID=$PUID
       - PGID=$PGID
       - VIRTUAL_HOST=views.$DOMAIN_URL
+      - LETSENCRYPT_HOST=views.$DOMAIN_URL
     volumes:
       - ${DATADIR}/tautulli/config:/config
     ports:
@@ -199,6 +204,7 @@ services:
       - PGID=$PGID
       - VIRTUAL_HOST=subtitles.$DOMAIN_URL
       - NETWORK_ACCESS=internal
+      - LETSENCRYPT_HOST=subtitles.$DOMAIN_URL
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
     volumes:
@@ -219,6 +225,7 @@ services:
       - PGID=$PGID
       - VIRTUAL_HOST=indexer.$DOMAIN_URL
       - NETWORK_ACCESS=internal
+      - LETSENCRYPT_HOST=indexer.$DOMAIN_URL
     volumes:
       - ${DATADIR}/prowlarr/config:/config
     ports:
@@ -271,6 +278,7 @@ services:
       - PGID=$PGID
       - VIRTUAL_HOST=health.$DOMAIN_URL
       - NETWORK_ACCESS=internal
+      - LETSENCRYPT_HOST=health.$DOMAIN_URL
     image: portainer/portainer-ce:latest
     container_name: portainer
     security_opt:
@@ -297,11 +305,12 @@ services:
     volumes:
       - certs:/etc/nginx/certs:ro
       - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
       - /var/run/docker.sock:/tmp/docker.sock:ro
 
 #------------- ACME COMPANION ----------------#
 
-acme-companion:
+  acme-companion:
     <<: *common-keys-core # See EXTENSION FIELDS at the top
     image: nginxproxy/acme-companion
     container_name: nginx-proxy-acme
@@ -310,8 +319,11 @@ acme-companion:
       - PUID=$PUID
       - PGID=$PGID
       - DEFAULT_EMAIL=mail@$DOMAIN_URL
+      - DHPARAM_GENERATION=false
+      - NGINX_PROXY_CONTAINER=nginx-proxy
     volumes:
       - certs:/etc/nginx/certs:rw
       - html:/usr/share/nginx/html:rw
       - acme:/etc/acme.sh
+      - vhost:/etc/nginx/vhost.d
       - /var/run/docker.sock:/var/run/docker.sock:ro
