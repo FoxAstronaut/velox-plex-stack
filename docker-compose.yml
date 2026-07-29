@@ -267,6 +267,10 @@ services:
 #------------- NGINX PROXY MANAGER --------------#
   nginx-proxy-manager:
     <<: *common-keys-core # See EXTENSION FIELDS at the top
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
     image: docker.io/jc21/nginx-proxy-manager:latest
     container_name: nginx-proxy-manager
     ports:
