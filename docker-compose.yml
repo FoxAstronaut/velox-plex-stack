@@ -1,17 +1,6 @@
-################################ EXTENSION FIELDS ################################
+# EXTENSION FIELDS #
 
-
-# For services that should automatically restart on failure
-
-x-common-keys-core: &common-keys-core
-  networks:
-    - plex_bridge
-  security_opt:
-    - no-new-privileges:true
-  restart: always
-
-# For services that should NOT automatically restart on failure
-
+# Services that should NOT automatically restart on failure
 x-common-keys-media: &common-keys-media
   networks:
     - plex_bridge
@@ -19,28 +8,35 @@ x-common-keys-media: &common-keys-media
     - no-new-privileges:true
   restart: "no"
 
+# Services that should automatically restart on failure
+x-common-keys-core: &common-keys-core
+  networks:
+    - plex_bridge
+  security_opt:
+    - no-new-privileges:true
+  restart: always
 
-#################################### NETWORKS ####################################
+# NETWORKS #
 
 networks:
   plex_bridge:
     name: plex_bridge
     driver: bridge
 
-#################################### VOLUMES ####################################
+# VOLUMES #
 
 volumes:
   certs:
-  
+  metrics:
 
-#################################### SERVICES  ###################################
+# SERVICES #
 
 services:
 
-#---------------- SONARR ------------------#
+#-- SONARR --#
 
   sonarr:
-    <<: *common-keys-media # See EXTENSION FIELDS at the top
+    <<: *common-keys-media
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     environment:
@@ -54,27 +50,10 @@ services:
     ports:
       - ${SONARR_PORT}:8989
 
-#-------------- SONARR 4K ---------------#
-
-  # sonarr_4k:
-  #   <<: *common-keys-media # See EXTENSION FIELDS at the top
-  #   image: lscr.io/linuxserver/sonarr:latest
-  #   container_name: sonarr_4k
-  #   environment:
-  #     - TZ=$TZ
-  #     - PUID=$PUID
-  #     - PGID=$PGID
-  #   volumes:
-  #     - ${DATADIR}/sonarr_4k/config:/config
-  #     - ${TV_4K_FOLDER}:/media/TV_4K
-  #     - ${DOWNLOADS_FOLDER}:/downloads
-  #   ports:
-  #     - ${SONARR_4K_PORT}:8989
-
-#--------------- RADARR -----------------#
+#--RADARR --#
 
   radarr:
-    <<: *common-keys-media # See EXTENSION FIELDS at the top
+    <<: *common-keys-media
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     environment:
@@ -88,27 +67,10 @@ services:
     ports:
       - ${RADARR_PORT}:7878
 
-#-------------- RADARR 4K ---------------#
-
-  # radarr_4k:
-  #   <<: *common-keys-media # See EXTENSION FIELDS at the top
-  #   image: lscr.io/linuxserver/radarr:latest
-  #   container_name: radarr_4k
-  #   environment:
-  #     - TZ=$TZ
-  #     - PUID=$PUID
-  #     - PGID=$PGID
-  #   volumes:
-  #     - ${DATADIR}/radarr_4k/config:/config
-  #     - ${MOVIES_4K_FOLDER}:/media/Movies_4K
-  #     - ${DOWNLOADS_FOLDER}:/downloads
-  #   ports:
-  #     - ${RADARR_4K_PORT}:7878
-
-#---------------- PLEX ------------------#
+#-- PLEX --#
 
   plex:
-    <<: *common-keys-media # See EXTENSION FIELDS at the top
+    <<: *common-keys-media
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
     devices:
@@ -122,18 +84,16 @@ services:
     volumes:
       - ${DATADIR}/plex/config:/config
       - ${MOVIES_FOLDER}:/media/Movies
-      # - ${MOVIES_4K_FOLDER}:/media/Movies_4K
       - ${TV_FOLDER}:/media/TV
-      # - ${TV_4K_FOLDER}:/media/TV_4K
       - /tmp/plex:/transcode
     ports:
       - ${PLEX_PORT}:32400
 
 
-#------------- QBITTORRENT --------------#
+#-- QBITTORRENT --#
 
   qbittorrent:
-    <<: *common-keys-media # See EXTENSION FIELDS at the top
+    <<: *common-keys-media
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
     environment:
@@ -147,10 +107,10 @@ services:
     ports:
       - ${QBITTORRENT_PORT}:8080
 
-#------------- OVERSEERR ----------------#
+#-- OVERSEERR --#
 
   overseerr:
-    <<: *common-keys-media # See EXTENSION FIELDS at the top
+    <<: *common-keys-media
     image: sctx/overseerr:latest
     container_name: overseerr
     environment:
@@ -162,10 +122,10 @@ services:
     volumes:
       - ${DATADIR}/overseerr/config:/app/config
 
-#-------------- TAUTULLI ----------------#
+#-- TAUTULLI --#
 
   tautulli:
-    <<: *common-keys-media # See EXTENSION FIELDS at the top
+    <<: *common-keys-media
     image: ghcr.io/tautulli/tautulli:latest
     container_name: tautulli
     environment:
@@ -177,10 +137,10 @@ services:
     ports:
       - ${TAUTULLI_PORT}:8181
 
-#--------------- BAZARR -----------------#
+#-- BAZARR --#
 
   bazarr:
-    <<: *common-keys-media # See EXTENSION FIELDS at the top
+    <<: *common-keys-media
     environment:
       - TZ=$TZ
       - PUID=$PUID
@@ -193,10 +153,10 @@ services:
       - ${BAZARR_PORT}:6767
     restart: unless-stopped
 
-#-------------- PROWLARR ----------------#
+#-- PROWLARR --#
 
   prowlarr:
-    <<: *common-keys-media # See EXTENSION FIELDS at the top
+    <<: *common-keys-media
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     environment:
@@ -209,54 +169,35 @@ services:
       - ${PROWLARR_PORT}:9696
     restart: unless-stopped
 
-#---------- PLEX META MANAGER -----------#
+#-- PLEX META MANAGER --#
 
   plex-meta-manager:
-    <<: *common-keys-media # See EXTENSION FIELDS at the top
+    <<: *common-keys-media
     image: lscr.io/linuxserver/plex-meta-manager:latest
     container_name: plex-meta-manager
     environment:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
-      - PMM_CONFIG=/config/config.yml #optional
-      - PMM_TIME=03:00 #optional
-      - PMM_RUN=True #optional
-      - PMM_TEST=False #optional
-      - PMM_NO_MISSING=False #optional
+      - PMM_CONFIG=/config/config.yml
+      - PMM_TIME=03:00
+      - PMM_RUN=True
+      - PMM_TEST=False
+      - PMM_NO_MISSING=False
     volumes:
       - ${DATADIR}/plexmetamanager/config:/config
     restart: unless-stopped
 
-#-------------- ORGANIZR ----------------#
-
-  # organizr:
-  #   <<: *common-keys-core # See EXTENSION FIELDS at the top
-  #   container_name: organizr
-  #   volumes:
-  #     - ${DATADIR}/organizr/config:/config
-  #   environment:
-  #     - TZ=$TZ
-  #     - PUID=$PUID
-  #     - PGID=$PGID
-  #     - fpm=true
-  #     - branch=v2-master
-  #   ports:
-  #     - '${ORGANIZR_PORT}:80'
-  #   image: organizr/organizr:latest
-
-#------------- PORTAINER ----------------#
+#-- PORTAINER --#
 
   portainer:
-    <<: *common-keys-core # See EXTENSION FIELDS at the top
+    <<: *common-keys-core
     environment:
       - TZ=$TZ
       - PUID=$PUID
       - PGID=$PGID
     image: portainer/portainer-ce:latest
     container_name: portainer
-    security_opt:
-      - no-new-privileges:true
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -264,9 +205,10 @@ services:
     ports:
       - ${PORTAINER_PORT}:9000
 
-#------------- NGINX PROXY MANAGER --------------#
+#-- NGINX PROXY MANAGER --#
+
   nginx-proxy-manager:
-    <<: *common-keys-core # See EXTENSION FIELDS at the top
+    <<: *common-keys-core
     environment:
       - TZ=$TZ
       - PUID=$PUID
@@ -275,8 +217,8 @@ services:
     container_name: nginx-proxy-manager
     ports:
       - ${NGINX_HTTP_PORT}:80
-      - ${NGINX_HTTPS_PORT}:81
-      - ${NGINX_ADMIN_PORT}:443
+      - ${NGINX_ADMIN_PORT}:81
+      - ${NGINX_HTTPS_PORT}:443
     volumes:
       - ${DATADIR}/nginx-proxy-manager/config:/data
       - certs:/etc/letsencrypt
