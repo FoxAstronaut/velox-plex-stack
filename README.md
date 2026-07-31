@@ -1,63 +1,50 @@
-# Plex Stack
+# Docker Media Stack
 
-- [Plex Media Server](https://github.com/linuxserver/docker-plex)
-- [Sonarr](https://github.com/Sonarr/Sonarr) - TV Shows automation/organizing/file management
-- [Radarr](https://github.com/Radarr/Radarr) - Movies automation/organizing/file management
+Media stack for managing and streaming media
+
+## Containers
+
+### Media
+- [Plex](https://github.com/linuxserver/docker-plex) - Media streaming server
+- [Sonarr](https://github.com/Sonarr/Sonarr) - TV request automation, organisation & file management
+- [Radarr](https://github.com/Radarr/Radarr) - Movie request automation, organisation & file management
+- [Qbittorrent](https://github.com/qbittorrent/qBittorrent) - Download client
 - [Tautulli](https://github.com/Tautulli/Tautulli) - Plex usage/performance monitoring system
-- [Organizr](https://github.com/causefx/Organizr) - Single web portal that embeds other web UI's, such as Sonarr, Radarr etc
-- [Portainer](https://github.com/portainer/portainer) - Graphical Docker container management tool
-- [Qbittorrent](https://github.com/qbittorrent/qBittorrent) - Torrent client
-- [Overseerr](https://github.com/sct/overseerr) - Web portal where users can log in with their Plex account and request movies/shows. Plex/Radarr/Sonarr integration
 - [Bazarr](https://github.com/morpheus65535/bazarr) - Automatic subtitle management/download
-- [Prowlarr](https://github.com/Prowlarr/Prowlarr) - Integrates with Radarr/Sonarr to manage their indexer/client settings in one place.
-- [Kometa](https://github.com/Kometa-Team/Kometa) (aka Plex Meta Manager) - Tool for customizing Plex library metadata. For example custom posters, collections, etc.
+- [Prowlarr](https://github.com/Prowlarr/Prowlarr) - Manages Radarr & Sonarr indexer and client settings
+- [Plex Meta Manager aka Kometa](https://github.com/Kometa-Team/Kometa) - Tool for customizing Plex library metadata
+
+### Docker Management & Monitoring
+- [Portainer](https://github.com/portainer/portainer) - Graphical Docker container management tool
+- [Prometheus](https://github.com/prometheus/prometheus) - Monitoring system and time series database
+- [Node Exporter](https://github.com/prometheus/node_exporter) - Export hardware and system metrics
+- [Grafana](https://github.com/grafana/grafana) - Pretty graphs
+- [CAdvisor](https://github.com/google/cadvisor) - Monitors container resource usage and performance
+
+### Networking
+- [Nginx Proxy Manager](https://github.com/NginxProxyManager/nginx-proxy-manager) - Reverse proxy with admin web UI
+
+### Future
+- Music - Server options - Symfonium, Lidarr. Clients options - Navidrome, Feishin
+- Photos - Server options - Lychee, Piwigo. Clients options - Photoprism, Chevereto
 
 ## Install Steps
 
-1. Clone the repo
+1. Clone this repo
 
-2. Now make a copy of the example env file and open it in a text editor
+2. Make a rename or copy  the `.env.example` to `.env`
 
-3. Change the config according to your needs. The last line is for the Plex token, keep in mind that it is only valid for 4 minutes after generation (you can generate a new one if it expires too quickly)
+3. Set your Plex token & set a in the `.env` file
 
-4. Start the stack.:
+Tip: It expires pretty quickly so I had to restart the plex container a couple times idk the if it will just refresh if the `.env` changes
 
-```
-docker compose -f /opt/plex-stack/docker-compose.yml up --detach
-```
+4. Start the stack with `docker compose up` (You can add `-d` to run it in the background)
 
-And remove the included example env file:
-
-```
-rm .env.example
-```
-
-5. Go to `http://localipofserver:32400/web` and log in with your Plex account to claim the server
-
-6. Go to Settings > Remote Access and verify connectivity (green lock)
-
-
+5. Once everything starts up you can go to `http://whateveryouripis:32400/web` and claim your plex server. Then mess around with settings for 4 hours
 
 ## Configuration
 
-All of these programs needs to be configured, which is outside the scope of this guide. [TRaSH-Guides](https://trash-guides.info/) has great detailed guides for setting everything up.
+Most of the setup is based off of [TRaSH-Guides](https://trash-guides.info/) but checkout the linked github repos above as they mostly have good docs
 
-Almost all of them are configured via web GUIs. Organizr is a great tool that can be used to organize all links into a single web portal. Each web gui is bound to it's own port on the host in this example, using unencrypted http. Therefore they should not be reachable from the internet via port forwarding. A reverse proxy can be used to proxy all traffic to each service with domain names, HTTPS, additional authentication etc. Traefik is the proxy I prefer, but setting it up is something that is also outside the scope of this guide at the moment.
-
-## Troubleshooting
-
-Portainer is a great graphical tool that you can use to manage/monitor your containers. It can be reached via http://ipofserver:9000/. You will have to create a password for the admin account, then you should see your environment under home. Here you can read logs, restart containers, recreate, remove etc.
-
-Indentation is also important when working with .yml files, usually docker compose will be able to tell you which line is wrong but incorrect indentation can lead to unexpected/weird errors so watch out for that when copying/pasting stuff for example.
-
-If your server says it's unavailable remotely, it's probably due to one of these things:
-
-* You are behind a CGNAT connection, which means you share one public IP with many others, and can't forward ports yourself. CGNAT addresses start with 100. Some ISPs can give you a real public IP if you request it, often for free.
-
-* You have not forwarded ports correctly. Check your routers port forwarding settings.
-
-* You are double NATed. You sit behind a router, which has it's WAN port connected to another router (sometimes the ISPs depending on country).
-
-You can easily test port connectivity using telnet. [Here](https://kb.synology.com/vi-vn/DSM/tutorial/Whether_TCP_port_is_open_or_closed) is a link explaining how to do it.
-
-If telnet can connect directly to the servers local IP on TCP 32400, the issue is probably the router settings, either your own or some upstream ISP router.
+## Credit
+This started as a fork of [btstromberg/plex-stack](https://github.com/btstromberg/plex-stack) so alot of credit to them for getting the initial setup in a somewhat working state
