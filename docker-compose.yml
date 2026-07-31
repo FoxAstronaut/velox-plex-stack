@@ -1,3 +1,5 @@
+name: velox-docker-stack
+
 # EXTENSION FIELDS #
 
 # Services that should NOT automatically restart on failure
@@ -236,10 +238,6 @@ services:
     volumes:
       - ${DATADIR}/prometheus/config:/etc/prometheus/
       - metrics:/prometheus
-    command:
-      - '-config.file=/etc/prometheus/prometheus.yml'
-      - '-storage.local.path=/prometheus'
-      - '-alertmanager.url=http://alertmanager:9093'
     ports:
       - ${PROMETHEUS_PORT}:9090
     expose:
@@ -247,6 +245,9 @@ services:
     links:
       - cadvisor:cadvisor
       - node-exporter:node-exporter
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
 
 #-- NODE EXPORTER --#
 
@@ -291,5 +292,7 @@ services:
     container_name: grafana
     volumes:
       - ${DATADIR}/grafana/config:/var/lib/grafana
+    ports:
+      - ${GRAFANA_PORT}:3000
     links:
       - prometheus:prometheus
